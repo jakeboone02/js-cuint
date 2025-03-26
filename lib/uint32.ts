@@ -4,8 +4,8 @@
  * MIT license
  */
 export default class UINT32 {
-  private _low: number;
-  private _high: number;
+  public _low!: number;
+  public _high!: number;
   public remainder: UINT32 | null;
 
   /**
@@ -14,7 +14,7 @@ export default class UINT32 {
    * @param {number | string} l - low bits | integer as a string | integer as a number
    * @param {number | undefined} h - high bits | radix (optional, default=10)
    */
-  constructor(l: number | string, h?: number) {
+  constructor(l?: number | string, h?: number) {
     this._low = 0;
     this._high = 0;
     this.remainder = null;
@@ -335,7 +335,7 @@ export default class UINT32 {
    * @param {boolean} allowOverflow
    * @return {this}
    */
-  shiftLeft(n: number, allowOverflow: boolean = false): this {
+  shiftLeft(n: number, allowOverflow = false): this {
     if (n > 16) {
       this._high = this._low << (n - 16);
       this._low = 0;

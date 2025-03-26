@@ -4,21 +4,21 @@
  * MIT license
  */
 export default class UINT64 {
-  private _a00: number;
-  private _a16: number;
-  private _a32: number;
-  private _a48: number;
-  public remainder: UINT64 | null;
+  public _a00!: number;
+  public _a16!: number;
+  public _a32!: number;
+  public _a48!: number;
+  public remainder: UINT64 | null = null;
 
   /**
    * Represents an unsigned 64-bit integer
    * @constructor
    * @param {number | string} a00 - low bits (32) or integer as a string
-   * @param {number | undefined} a16 - high bits (32) or radix (optional, default=10)
+   * @param {number} a16 - high bits (32) or radix (optional, default=10)
    * @param {number} a32 - first high bits (8)
    * @param {number} a48 - second high bits (8)
    */
-  constructor(a00: number | string, a16?: number, a32?: number, a48?: number) {
+  constructor(a00?: number | string, a16?: number, a32?: number, a48?: number) {
     this.remainder = null;
 
     if (typeof a00 === 'string') {
@@ -26,10 +26,10 @@ export default class UINT64 {
     }
 
     if (typeof a16 === 'undefined') {
-      return this.fromNumber(a00 as number);
+      return this.fromNumber(a00!);
     }
 
-    this.fromBits(a00 as number, a16, a32, a48);
+    this.fromBits(a00!, a16, a32, a48);
   }
 
   /**
@@ -467,7 +467,7 @@ export default class UINT64 {
    * @param {boolean} allowOverflow - allow overflow
    * @return {this}
    */
-  shiftLeft(n: number, allowOverflow: boolean): this {
+  shiftLeft(n: number, allowOverflow = false): this {
     n %= 64;
     if (n >= 48) {
       this._a48 = this._a00 << (n - 48);

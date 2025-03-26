@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "bun test",
-    "build": "bun build"
+    "build": "bun build ./lib/uint32.ts --outdir ./build --entry-naming uint32.js && bun build ./lib/uint32.ts --outdir ./build --minify --entry-naming uint32.min.js && bun build ./lib/uint64.ts --outdir ./build --entry-naming uint64.js && bun build ./lib/uint64.ts --outdir ./build --minify --entry-naming uint64.min.js"
   },
   "repository": {
     "type": "git",
