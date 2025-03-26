@@ -1,33 +1,24 @@
 /**
- * Local cache for typical radices
- */
-const radixPowerCache = {
-  16: new UINT64(Math.pow(16, 5)),
-  10: new UINT64(Math.pow(10, 5)),
-  2: new UINT64(Math.pow(2, 5)),
-};
-
-const radixCache = {
-  16: new UINT64(16),
-  10: new UINT64(10),
-  2: new UINT64(2),
-};
-
-/**
- * C-like unsigned 64 bits integers in Javascript
+ * C-like unsigned 64-bit integers in TypeScript
  * Copyright (C) 2013, Pierre Curto
  * MIT license
  */
 export default class UINT64 {
+  private _a00: number;
+  private _a16: number;
+  private _a32: number;
+  private _a48: number;
+  public remainder: UINT64 | null;
+
   /**
-   * Represents an unsigned 64 bits integer
+   * Represents an unsigned 64-bit integer
    * @constructor
-   * @param {Number|String} a00 - low bits (32) or integer as a string
-   * @param {Number|Undefined} a16 - high bits (32) or radix (optional, default=10)
-   * @param {Number} a32 - first high bits (8)
-   * @param {Number} a48 - second high bits (8)
+   * @param {number | string} a00 - low bits (32) or integer as a string
+   * @param {number | undefined} a16 - high bits (32) or radix (optional, default=10)
+   * @param {number} a32 - first high bits (8)
+   * @param {number} a48 - second high bits (8)
    */
-  constructor(a00, a16, a32, a48) {
+  constructor(a00: number | string, a16?: number, a32?: number, a48?: number) {
     this.remainder = null;
 
     if (typeof a00 === 'string') {
@@ -35,22 +26,22 @@ export default class UINT64 {
     }
 
     if (typeof a16 === 'undefined') {
-      return this.fromNumber(a00);
+      return this.fromNumber(a00 as number);
     }
 
-    this.fromBits(a00, a16, a32, a48);
+    this.fromBits(a00 as number, a16, a32, a48);
   }
 
   /**
    * Set the current UINT64 object with its low and high bits
    * @method fromBits
-   * @param {Number} a00 - first low bits (8)
-   * @param {Number} a16 - second low bits (8)
-   * @param {Number} a32 - first high bits (8)
-   * @param {Number} a48 - second high bits (8)
-   * @return {UINT64} ThisExpression
+   * @param {number} a00 - first low bits (8)
+   * @param {number} a16 - second low bits (8)
+   * @param {number} a32 - first high bits (8)
+   * @param {number} a48 - second high bits (8)
+   * @return {this}
    */
-  fromBits(a00, a16, a32, a48) {
+  fromBits(a00: number, a16: number, a32?: number, a48?: number): this {
     if (typeof a32 === 'undefined') {
       this._a00 = a00 & 0xffff;
       this._a16 = a00 >>> 16;
@@ -62,6 +53,7 @@ export default class UINT64 {
     this._a00 = a00 | 0;
     this._a16 = a16 | 0;
     this._a32 = a32 | 0;
+    // @ts-expect-error a48 may be undefined
     this._a48 = a48 | 0;
 
     return this;
@@ -70,10 +62,10 @@ export default class UINT64 {
   /**
    * Set the current UINT64 object from a number
    * @method fromNumber
-   * @param {Number} value - number to set
-   * @return {UINT64} ThisExpression
+   * @param {number} value - number to set
+   * @return {this}
    */
-  fromNumber(value) {
+  fromNumber(value: number): this {
     this._a00 = value & 0xffff;
     this._a16 = value >>> 16;
     this._a32 = 0;
@@ -85,11 +77,11 @@ export default class UINT64 {
   /**
    * Set the current UINT64 object from a string
    * @method fromString
-   * @param {String} s - integer as a string
-   * @param {Number} radix - optional, default=10
-   * @return {UINT64} ThisExpression
+   * @param {string} s - integer as a string
+   * @param {number} radix - optional, default=10
+   * @return {this}
    */
-  fromString(s, radix = 10) {
+  fromString(s: string, radix: number = 10): this {
     this._a00 = 0;
     this._a16 = 0;
     this._a32 = 0;
@@ -111,29 +103,29 @@ export default class UINT64 {
   /**
    * Convert this UINT64 to a number (last 32 bits are dropped)
    * @method toNumber
-   * @return {Number} the converted UINT64
+   * @return {number} the converted UINT64
    */
-  toNumber() {
+  toNumber(): number {
     return this._a16 * 65536 + this._a00;
   }
 
   /**
    * Convert this UINT64 to a string
    * @method toString
-   * @param {Number} radix - optional, default=10
-   * @return {String} the converted UINT64
+   * @param {number} radix - optional, default=10
+   * @return {string} the converted UINT64
    */
-  toString(radix = 10) {
+  toString(radix: number = 10): string {
     const radixUint = radixCache[radix] ?? new UINT64(radix);
 
     if (!this.gt(radixUint)) return this.toNumber().toString(radix);
 
     const self = this.clone();
-    const res = new Array(64);
+    const res: string[] = new Array(64);
     let i = 63;
     for (; i >= 0; i--) {
       self.div(radixUint);
-      res[i] = self.remainder.toNumber().toString(radix);
+      res[i] = self.remainder!.toNumber().toString(radix);
       if (!self.gt(radixUint)) break;
     }
     res[i - 1] = self.toNumber().toString(radix);
@@ -145,9 +137,9 @@ export default class UINT64 {
    * Add two UINT64. The current UINT64 stores the result
    * @method add
    * @param {UINT64} other - UINT64 to add
-   * @return {UINT64} ThisExpression
+   * @return {this}
    */
-  add(other) {
+  add(other: UINT64): this {
     const a00 = this._a00 + other._a00;
 
     let a16 = a00 >>> 16;
@@ -171,9 +163,9 @@ export default class UINT64 {
    * Subtract two UINT64. The current UINT64 stores the result
    * @method subtract
    * @param {UINT64} other - UINT64 to subtract
-   * @return {UINT64} ThisExpression
+   * @return {this}
    */
-  subtract(other) {
+  subtract(other: UINT64): this {
     return this.add(other.clone().negate());
   }
 
@@ -181,9 +173,9 @@ export default class UINT64 {
    * Multiply two UINT64. The current UINT64 stores the result
    * @method multiply
    * @param {UINT64} other - UINT64 to multiply
-   * @return {UINT64} ThisExpression
+   * @return {this}
    */
-  multiply(other) {
+  multiply(other: UINT64): this {
     const a00 = this._a00;
     const a16 = this._a16;
     const a32 = this._a32;
@@ -233,9 +225,9 @@ export default class UINT64 {
    * the UINT64 object. It can be null, meaning there is no remainder.
    * @method div
    * @param {UINT64} other - UINT64 to divide
-   * @return {UINT64} ThisExpression
+   * @return {this}
    */
-  div(other) {
+  div(other: UINT64): this {
     if (other._a16 === 0 && other._a32 === 0 && other._a48 === 0) {
       if (other._a00 === 0) throw Error('division by zero');
 
@@ -297,9 +289,9 @@ export default class UINT64 {
   /**
    * Negate the current UINT64
    * @method negate
-   * @return {UINT64} ThisExpression
+   * @return {this}
    */
-  negate() {
+  negate(): this {
     let v = (~this._a00 & 0xffff) + 1;
     this._a00 = v & 0xffff;
     v = (~this._a16 & 0xffff) + (v >>> 16);
@@ -315,9 +307,9 @@ export default class UINT64 {
    * Check equality of two UINT64
    * @method eq
    * @param {UINT64} other - UINT64 to compare
-   * @return {Boolean} true if equal, false otherwise
+   * @return {boolean} true if equal, false otherwise
    */
-  eq(other) {
+  eq(other: UINT64): boolean {
     return (
       this._a48 === other._a48 &&
       this._a00 === other._a00 &&
@@ -326,7 +318,7 @@ export default class UINT64 {
     );
   }
 
-  equals(other) {
+  equals(other: UINT64): boolean {
     return this.eq(other);
   }
 
@@ -334,9 +326,9 @@ export default class UINT64 {
    * Greater than (strict)
    * @method gt
    * @param {UINT64} other - UINT64 to compare
-   * @return {Boolean} true if greater, false otherwise
+   * @return {boolean} true if greater, false otherwise
    */
-  gt(other) {
+  gt(other: UINT64): boolean {
     if (this._a48 > other._a48) return true;
     if (this._a48 < other._a48) return false;
     if (this._a32 > other._a32) return true;
@@ -346,7 +338,7 @@ export default class UINT64 {
     return this._a00 > other._a00;
   }
 
-  greaterThan(other) {
+  greaterThan(other: UINT64): boolean {
     return this.gt(other);
   }
 
@@ -354,9 +346,9 @@ export default class UINT64 {
    * Less than (strict)
    * @method lt
    * @param {UINT64} other - UINT64 to compare
-   * @return {Boolean} true if less, false otherwise
+   * @return {boolean} true if less, false otherwise
    */
-  lt(other) {
+  lt(other: UINT64): boolean {
     if (this._a48 < other._a48) return true;
     if (this._a48 > other._a48) return false;
     if (this._a32 < other._a32) return true;
@@ -366,7 +358,7 @@ export default class UINT64 {
     return this._a00 < other._a00;
   }
 
-  lessThan(other) {
+  lessThan(other: UINT64): boolean {
     return this.lt(other);
   }
 
@@ -374,9 +366,9 @@ export default class UINT64 {
    * Bitwise OR
    * @method or
    * @param {UINT64} other - UINT64 to OR
-   * @return {UINT64} ThisExpression
+   * @return {this}
    */
-  or(other) {
+  or(other: UINT64): this {
     this._a00 |= other._a00;
     this._a16 |= other._a16;
     this._a32 |= other._a32;
@@ -389,9 +381,9 @@ export default class UINT64 {
    * Bitwise AND
    * @method and
    * @param {UINT64} other - UINT64 to AND
-   * @return {UINT64} ThisExpression
+   * @return {this}
    */
-  and(other) {
+  and(other: UINT64): this {
     this._a00 &= other._a00;
     this._a16 &= other._a16;
     this._a32 &= other._a32;
@@ -404,9 +396,9 @@ export default class UINT64 {
    * Bitwise XOR
    * @method xor
    * @param {UINT64} other - UINT64 to XOR
-   * @return {UINT64} ThisExpression
+   * @return {this}
    */
-  xor(other) {
+  xor(other: UINT64): this {
     this._a00 ^= other._a00;
     this._a16 ^= other._a16;
     this._a32 ^= other._a32;
@@ -418,9 +410,9 @@ export default class UINT64 {
   /**
    * Bitwise NOT
    * @method not
-   * @return {UINT64} ThisExpression
+   * @return {this}
    */
-  not() {
+  not(): this {
     this._a00 = ~this._a00 & 0xffff;
     this._a16 = ~this._a16 & 0xffff;
     this._a32 = ~this._a32 & 0xffff;
@@ -432,10 +424,10 @@ export default class UINT64 {
   /**
    * Bitwise shift right
    * @method shiftRight
-   * @param {Number} n - number of bits to shift
-   * @return {UINT64} ThisExpression
+   * @param {number} n - number of bits to shift
+   * @return {this}
    */
-  shiftRight(n) {
+  shiftRight(n: number): this {
     n %= 64;
     if (n >= 48) {
       this._a00 = this._a48 >> (n - 48);
@@ -464,18 +456,18 @@ export default class UINT64 {
     return this;
   }
 
-  shiftr(n) {
+  shiftr(n: number): this {
     return this.shiftRight(n);
   }
 
   /**
    * Bitwise shift left
    * @method shiftLeft
-   * @param {Number} n - number of bits to shift
-   * @param {Boolean} allowOverflow - allow overflow
-   * @return {UINT64} ThisExpression
+   * @param {number} n - number of bits to shift
+   * @param {boolean} allowOverflow - allow overflow
+   * @return {this}
    */
-  shiftLeft(n, allowOverflow) {
+  shiftLeft(n: number, allowOverflow: boolean): this {
     n %= 64;
     if (n >= 48) {
       this._a48 = this._a00 << (n - 48);
@@ -507,17 +499,17 @@ export default class UINT64 {
     return this;
   }
 
-  shiftl(n, allowOverflow = false) {
+  shiftl(n: number, allowOverflow = false): this {
     return this.shiftLeft(n, allowOverflow);
   }
 
   /**
    * Bitwise rotate left
    * @method rotateLeft
-   * @param {Number} n - number of bits to rotate
-   * @return {UINT64} ThisExpression
+   * @param {number} n - number of bits to rotate
+   * @return {this}
    */
-  rotateLeft(n) {
+  rotateLeft(n: number): this {
     n %= 64;
     if (n === 0) return this;
     if (n >= 32) {
@@ -545,17 +537,17 @@ export default class UINT64 {
     return this;
   }
 
-  rotl(n) {
+  rotl(n: number): this {
     return this.rotateLeft(n);
   }
 
   /**
    * Bitwise rotate right
    * @method rotateRight
-   * @param {Number} n - number of bits to rotate
-   * @return {UINT64} ThisExpression
+   * @param {number} n - number of bits to rotate
+   * @return {this}
    */
-  rotateRight(n) {
+  rotateRight(n: number): this {
     n %= 64;
     if (n === 0) return this;
     if (n >= 32) {
@@ -583,7 +575,7 @@ export default class UINT64 {
     return this;
   }
 
-  rotr(n) {
+  rotr(n: number): this {
     return this.rotateRight(n);
   }
 
@@ -592,7 +584,22 @@ export default class UINT64 {
    * @method clone
    * @return {UINT64} cloned UINT64
    */
-  clone() {
+  clone(): UINT64 {
     return new UINT64(this._a00, this._a16, this._a32, this._a48);
   }
 }
+
+/**
+ * Local cache for typical radices
+ */
+const radixPowerCache: Record<number, UINT64> = {
+  16: new UINT64(Math.pow(16, 5)),
+  10: new UINT64(Math.pow(10, 5)),
+  2: new UINT64(Math.pow(2, 5)),
+};
+
+const radixCache: Record<number, UINT64> = {
+  16: new UINT64(16),
+  10: new UINT64(10),
+  2: new UINT64(2),
+};

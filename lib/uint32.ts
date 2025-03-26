@@ -1,40 +1,43 @@
 /**
- * C-like unsigned 32 bits integers in Javascript
+ * C-like unsigned 32-bit integers in TypeScript
  * Copyright (C) 2013, Pierre Curto
  * MIT license
  */
 export default class UINT32 {
+  private _low: number;
+  private _high: number;
+  public remainder: UINT32 | null;
+
   /**
-   * Represents an unsigned 32 bits integer
+   * Represents an unsigned 32-bit integer
    * @constructor
-   * @param {Number|String|Number} low bits     | integer as a string         | integer as a number
-   * @param {Number|Number|Undefined} high bits | radix (optional, default=10)
-   * @return
+   * @param {number | string} l - low bits | integer as a string | integer as a number
+   * @param {number | undefined} h - high bits | radix (optional, default=10)
    */
-  constructor(l, h) {
+  constructor(l: number | string, h?: number) {
     this._low = 0;
     this._high = 0;
     this.remainder = null;
 
     if (typeof h === 'undefined') {
-      return this.fromNumber(l);
+      return this.fromNumber(l as number);
     }
 
     if (typeof l === 'string') {
       return this.fromString(l, h);
     }
 
-    this.fromBits(l, h);
+    this.fromBits(l as number, h);
   }
 
   /**
    * Set the current _UINT32_ object with its low and high bits
    * @method fromBits
-   * @param {Number} low bits
-   * @param {Number} high bits
-   * @return ThisExpression
+   * @param {number} l - low bits
+   * @param {number} h - high bits
+   * @return {this}
    */
-  fromBits(l, h) {
+  fromBits(l: number, h: number): this {
     this._low = l | 0;
     this._high = h | 0;
     return this;
@@ -43,10 +46,10 @@ export default class UINT32 {
   /**
    * Set the current _UINT32_ object from a number
    * @method fromNumber
-   * @param {Number} number
-   * @return ThisExpression
+   * @param {number} value
+   * @return {this}
    */
-  fromNumber(value) {
+  fromNumber(value: number): this {
     this._low = value & 0xffff;
     this._high = value >>> 16;
     return this;
@@ -55,11 +58,11 @@ export default class UINT32 {
   /**
    * Set the current _UINT32_ object from a string
    * @method fromString
-   * @param {String} integer as a string
-   * @param {Number} radix (optional, default=10)
-   * @return ThisExpression
+   * @param {string} s - integer as a string
+   * @param {number} radix - radix (optional, default=10)
+   * @return {this}
    */
-  fromString(s, radix = 10) {
+  fromString(s: string, radix: number = 10): this {
     const value = parseInt(s, radix);
     this._low = value & 0xffff;
     this._high = value >>> 16;
@@ -69,29 +72,29 @@ export default class UINT32 {
   /**
    * Convert this _UINT32_ to a number
    * @method toNumber
-   * @return {Number} the converted UINT32
+   * @return {number} the converted UINT32
    */
-  toNumber() {
+  toNumber(): number {
     return this._high * 65536 + this._low;
   }
 
   /**
    * Convert this _UINT32_ to a string
    * @method toString
-   * @param {Number} radix (optional, default=10)
-   * @return {String} the converted UINT32
+   * @param {number} radix - radix (optional, default=10)
+   * @return {string} the converted UINT32
    */
-  toString(radix = 10) {
+  toString(radix: number = 10): string {
     return this.toNumber().toString(radix);
   }
 
   /**
    * Add two _UINT32_. The current _UINT32_ stores the result
    * @method add
-   * @param {Object} other UINT32
-   * @return ThisExpression
+   * @param {UINT32} other
+   * @return {this}
    */
-  add(other) {
+  add(other: UINT32): this {
     const a00 = this._low + other._low;
     let a16 = a00 >>> 16;
 
@@ -106,20 +109,20 @@ export default class UINT32 {
   /**
    * Subtract two _UINT32_. The current _UINT32_ stores the result
    * @method subtract
-   * @param {Object} other UINT32
-   * @return ThisExpression
+   * @param {UINT32} other
+   * @return {this}
    */
-  subtract(other) {
+  subtract(other: UINT32): this {
     return this.add(other.clone().negate());
   }
 
   /**
    * Multiply two _UINT32_. The current _UINT32_ stores the result
    * @method multiply
-   * @param {Object} other UINT32
-   * @return ThisExpression
+   * @param {UINT32} other
+   * @return {this}
    */
-  multiply(other) {
+  multiply(other: UINT32): this {
     const a16 = this._high;
     const a00 = this._low;
     const b16 = other._high;
@@ -144,10 +147,10 @@ export default class UINT32 {
    * The remainder is made available as the _remainder_ property on
    * the _UINT32_ object. It can be null, meaning there are no remainder.
    * @method div
-   * @param {Object} other UINT32
-   * @return ThisExpression
+   * @param {UINT32} other
+   * @return {this}
    */
-  div(other) {
+  div(other: UINT32): this {
     if (other._low === 0 && other._high === 0) throw Error('division by zero');
 
     if (other._high === 0 && other._low === 1) {
@@ -198,9 +201,9 @@ export default class UINT32 {
   /**
    * Negate the current _UINT32_
    * @method negate
-   * @return ThisExpression
+   * @return {this}
    */
-  negate() {
+  negate(): this {
     const v = (~this._low & 0xffff) + 1;
     this._low = v & 0xffff;
     this._high = (~this._high + (v >>> 16)) & 0xffff;
@@ -211,56 +214,56 @@ export default class UINT32 {
   /**
    * Equals
    * @method eq
-   * @param {Object} other UINT32
-   * @return {Boolean}
+   * @param {UINT32} other
+   * @return {boolean}
    */
-  eq(other) {
+  eq(other: UINT32): boolean {
     return this._low === other._low && this._high === other._high;
   }
 
-  equals(other) {
+  equals(other: UINT32): boolean {
     return this.eq(other);
   }
 
   /**
    * Greater than (strict)
    * @method gt
-   * @param {Object} other UINT32
-   * @return {Boolean}
+   * @param {UINT32} other
+   * @return {boolean}
    */
-  gt(other) {
+  gt(other: UINT32): boolean {
     if (this._high > other._high) return true;
     if (this._high < other._high) return false;
     return this._low > other._low;
   }
 
-  greaterThan(other) {
+  greaterThan(other: UINT32): boolean {
     return this.gt(other);
   }
 
   /**
    * Less than (strict)
    * @method lt
-   * @param {Object} other UINT32
-   * @return {Boolean}
+   * @param {UINT32} other
+   * @return {boolean}
    */
-  lt(other) {
+  lt(other: UINT32): boolean {
     if (this._high < other._high) return true;
     if (this._high > other._high) return false;
     return this._low < other._low;
   }
 
-  lessThan(other) {
+  lessThan(other: UINT32): boolean {
     return this.lt(other);
   }
 
   /**
    * Bitwise OR
    * @method or
-   * @param {Object} other UINT32
-   * @return ThisExpression
+   * @param {UINT32} other
+   * @return {this}
    */
-  or(other) {
+  or(other: UINT32): this {
     this._low |= other._low;
     this._high |= other._high;
     return this;
@@ -269,10 +272,10 @@ export default class UINT32 {
   /**
    * Bitwise AND
    * @method and
-   * @param {Object} other UINT32
-   * @return ThisExpression
+   * @param {UINT32} other
+   * @return {this}
    */
-  and(other) {
+  and(other: UINT32): this {
     this._low &= other._low;
     this._high &= other._high;
     return this;
@@ -281,9 +284,9 @@ export default class UINT32 {
   /**
    * Bitwise NOT
    * @method not
-   * @return ThisExpression
+   * @return {this}
    */
-  not() {
+  not(): this {
     this._low = ~this._low & 0xffff;
     this._high = ~this._high & 0xffff;
     return this;
@@ -292,10 +295,10 @@ export default class UINT32 {
   /**
    * Bitwise XOR
    * @method xor
-   * @param {Object} other UINT32
-   * @return ThisExpression
+   * @param {UINT32} other
+   * @return {this}
    */
-  xor(other) {
+  xor(other: UINT32): this {
     this._low ^= other._low;
     this._high ^= other._high;
     return this;
@@ -304,10 +307,10 @@ export default class UINT32 {
   /**
    * Bitwise shift right
    * @method shiftRight
-   * @param {Number} number of bits to shift
-   * @return ThisExpression
+   * @param {number} n - number of bits to shift
+   * @return {this}
    */
-  shiftRight(n) {
+  shiftRight(n: number): this {
     if (n > 16) {
       this._low = this._high >> (n - 16);
       this._high = 0;
@@ -321,18 +324,18 @@ export default class UINT32 {
     return this;
   }
 
-  shiftr(n) {
+  shiftr(n: number): this {
     return this.shiftRight(n);
   }
 
   /**
    * Bitwise shift left
    * @method shiftLeft
-   * @param {Number} number of bits to shift
-   * @param {Boolean} allow overflow
-   * @return ThisExpression
+   * @param {number} n - number of bits to shift
+   * @param {boolean} allowOverflow
+   * @return {this}
    */
-  shiftLeft(n, allowOverflow = false) {
+  shiftLeft(n: number, allowOverflow: boolean = false): this {
     if (n > 16) {
       this._high = this._low << (n - 16);
       this._low = 0;
@@ -346,24 +349,23 @@ export default class UINT32 {
       this._high = (this._high << n) | (this._low >> (16 - n));
       this._low = (this._low << n) & 0xffff;
       if (!allowOverflow) {
-        // Overflow only allowed on the high bits...
         this._high &= 0xffff;
       }
     }
     return this;
   }
 
-  shiftl(n, allowOverflow) {
+  shiftl(n: number, allowOverflow?: boolean): this {
     return this.shiftLeft(n, allowOverflow);
   }
 
   /**
    * Bitwise rotate left
    * @method rotateLeft
-   * @param {Number} number of bits to rotate
-   * @return ThisExpression
+   * @param {number} n - number of bits to rotate
+   * @return {this}
    */
-  rotateLeft(n) {
+  rotateLeft(n: number): this {
     const v = (this._high << 16) | this._low;
     const rotated = (v << n) | (v >>> (32 - n));
     this._low = rotated & 0xffff;
@@ -371,17 +373,17 @@ export default class UINT32 {
     return this;
   }
 
-  rotl(n) {
+  rotl(n: number): this {
     return this.rotateLeft(n);
   }
 
   /**
    * Bitwise rotate right
    * @method rotateRight
-   * @param {Number} number of bits to rotate
-   * @return ThisExpression
+   * @param {number} n - number of bits to rotate
+   * @return {this}
    */
-  rotateRight(n) {
+  rotateRight(n: number): this {
     const v = (this._high << 16) | this._low;
     const rotated = (v >>> n) | (v << (32 - n));
     this._low = rotated & 0xffff;
@@ -389,16 +391,16 @@ export default class UINT32 {
     return this;
   }
 
-  rotr(n) {
+  rotr(n: number): this {
     return this.rotateRight(n);
   }
 
   /**
    * Clone the current _UINT32_
    * @method clone
-   * @return {Object} cloned UINT32
+   * @return {UINT32} cloned UINT32
    */
-  clone() {
+  clone(): UINT32 {
     return new UINT32(this._low, this._high);
   }
 }
