@@ -1,7 +1,7 @@
 {
   "name": "@react-querybuilder/cuint",
   "version": "0.1.0",
-  "description": "Unsigned integers for Javascript",
+  "description": "Unsigned integers for JavaScript",
   "main": "index.js",
   "scripts": {
     "test": "bun test",

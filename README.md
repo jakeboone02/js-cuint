@@ -1,12 +1,12 @@
-# C-like unsigned integers for Javascript
+# C-like unsigned integers for JavaScript
 
 ## Synopsis
 
-Javascript does not natively support handling of unsigned 32 or 64 bits integers. This library provides that functionality, following C behaviour, enabling the writing of algorithms that depend on it. It was designed with performance in mind and tries its best to be as fast as possible. Any improvement is welcome!
+JavaScript does not natively support handling of unsigned 32- or 64-bit integers. This library provides that functionality, following C behaviour, enabling the writing of algorithms that depend on it. It was designed with performance in mind and tries its best to be as fast as possible. Any improvement is welcome!
 
 ## How it works
 
-An unsigned 32 bits integer is represented by an object with its first 16 bits (low bits) and its 16 last ones (high bits). All the supported standard operations on the unsigned integer are then performed transparently.
+An unsigned 32-bit integer is represented by an object with its first 16 bits (low bits) and its 16 last ones (high bits). All the supported standard operations on the unsigned integer are then performed transparently.
 
     e.g.
     10000010000100000100010000100010 (2182104098 or 0x82104422) is represented by:
@@ -16,7 +16,7 @@ An unsigned 32 bits integer is represented by an object with its first 16 bits (
 NB.
 In case of overflow, the unsigned integer is _truncated_ to its lowest 32 bits (in case of UINT32) or 64 bits (in case of UINT64).
 
-The same applies to 64 bits integers, which are split into 4 16 bits ones.
+The same applies to 64-bit integers, which are split into 4 16 bits ones.
 
 ## Installation
 
@@ -38,7 +38,7 @@ In the browser, include the following (file is located in the _build_ directory)
 
 ## Usage
 
-To instantiate an unsigned 32 bits integer, do any of the following:
+To instantiate an unsigned 32-bit integer, do any of the following:
 
 ```js
 var UINT32 = require('cuint').UINT32 // NodeJS
@@ -47,7 +47,7 @@ UINT32( <number> )
 UINT32( '<number>', <radix> ) // radix = 10 by default
 ```
 
-To instantiate an unsigned 64 bits integer, do any of the following:
+To instantiate an unsigned 64-bit integer, do any of the following:
 
 ```js
 var UINT64 = require('cuint').UINT64 // NodeJS
@@ -79,7 +79,7 @@ z = UINT(x).clone().add(UINT(y));
   > `UINT32( 2, 1 )		// 65538`
   > { remainder: null, \_low: 2, \_high: 1 }
 
-- Using a number (signed 32 bits integer)
+- Using a number (signed 32-bit integer)
 
   > `UINT32( 65538 ) 	// 65538`
   > { remainder: null, \_low: 2, \_high: 1 }
@@ -94,7 +94,7 @@ z = UINT(x).clone().add(UINT(y));
   > `UINT32( '3266489917' )`
   > { remainder: null, \_low: 44605, \_high: 49842 }
 
-- Divide 2 unsigned 32 bits integers - note that the remainder is also provided
+- Divide 2 unsigned 32-bit integers - note that the remainder is also provided
   > `UINT32( '3266489917' ).div( UINT32( '668265263' ) )`
   > { remainder:
   > { remainder: null
@@ -117,7 +117,7 @@ z = UINT(x).clone().add(UINT(y));
   > `UINT64( 2, 1, 0, 0 )		// 65538`
   > { remainder: null, \_a00: 2, \_a16: 1, \_a32: 0, \_a48: 0 }
 
-- Using a number (signed 32 bits integer)
+- Using a number (signed 32-bit integer)
 
   > `UINT64( 65538 ) 	// 65538`
   > { remainder: null, \_a00: 2, \_a16: 1, \_a32: 0, \_a48: 0 }
@@ -132,7 +132,7 @@ z = UINT(x).clone().add(UINT(y));
   > `UINT64( '3266489917' )`
   > { remainder: null, \_a00: 44605, \_a16: 49842, \_a32: 0, \_a48: 0 }
 
-- Divide 2 unsigned 64 bits integers - note that the remainder is also provided
+- Divide 2 unsigned 64-bit integers - note that the remainder is also provided
   > `UINT64( 'F00000000000', 16 ).div( UINT64( '800000000000', 16 ) )`
   > { remainder:
   > { remainder: null,
