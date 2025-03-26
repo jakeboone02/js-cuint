@@ -3,7 +3,7 @@
  * Copyright (C) 2013, Pierre Curto
  * MIT license
  */
-export default class UINT32 {
+export class UINT32 {
   public _low!: number;
   public _high!: number;
   public remainder: UINT32 | null;

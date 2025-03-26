@@ -3,7 +3,7 @@
  * Copyright (C) 2013, Pierre Curto
  * MIT license
  */
-export default class UINT64 {
+export class UINT64 {
   public _a00!: number;
   public _a16!: number;
   public _a32!: number;
