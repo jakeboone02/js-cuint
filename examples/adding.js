@@ -1,6 +1,6 @@
-var UINT32 = require('..').UINT32
+import { UINT32 } from '..';
 
-var v1 = UINT32('326648991')
-var v2 = UINT32('265443576')
-var v1plus2 = v1.clone().add(v2)
-console.log( v1 + ' + ' + v2 + ' = ' + v1plus2 )
+const v1 = new UINT32('326648991');
+const v2 = new UINT32('265443576');
+const v1plus2 = v1.clone().add(v2);
+console.log(`${v1} + ${v2} = ${v1plus2}`);

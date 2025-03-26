@@ -1,15 +1,15 @@
 {
-  "name": "cuint",
-  "version": "0.2.2",
+  "name": "@react-querybuilder/cuint",
+  "version": "0.1.0",
   "description": "Unsigned integers for Javascript",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "prepublish": "node build"
+    "test": "bun test",
+    "build": "bun build"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/pierrec/js-cuint"
+    "url": "https://github.com/react-querybuilder/js-cuint"
   },
   "keywords": [
     "C",
@@ -21,11 +21,12 @@
   "author": "Pierre Curto",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/pierrec/js-cuint/issues"
+    "url": "https://github.com/react-querybuilder/js-cuint/issues"
   },
-  "homepage": "https://github.com/pierrec/js-cuint",
+  "homepage": "https://github.com/react-querybuilder/js-cuint",
   "devDependencies": {
-    "minify": "0.2.x",
-    "mocha": "^2.1.0"
+    "@types/bun": "^1.2.6",
+    "prettier": "3.5.3",
+    "typescript": "^5.8.2"
   }
 }
